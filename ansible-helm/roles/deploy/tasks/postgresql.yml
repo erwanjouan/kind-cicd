@@ -1,0 +1,21 @@
+- name: Add bitnami Helm repo
+  kubernetes.core.helm_repository:
+      name: bitnami
+      repo_url: https://charts.bitnami.com/bitnami
+
+- name: Install Postgresql Helm Chart
+  kubernetes.core.helm:
+      # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+      name: '{{ postgresql.service_name }}'
+      namespace: '{{ namespace }}'
+      chart_ref: bitnami/postgresql
+      wait: true
+      values:
+        auth:
+          database: batch_example_db
+          username: batch_example_adm
+          password: batch_example_pass
+
+- name: Expose Postgresql port
+  shell: >
+    nohup kubectl port-forward svc/{{ postgresql.service_name }} {{ postgresql.port }}:{{ postgresql.port }}  --address='0.0.0.0' --namespace {{ namespace }} >/dev/null 2>&1 &

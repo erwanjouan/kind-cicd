@@ -1,0 +1,9 @@
+# Kind cluster creation
+
+- name: Create kind cluster
+  shell: "kind create cluster --name {{ namespace }}"
+  ignore_errors: yes
+
+- name: Cluster creation has been finished
+  debug:
+    msg: "Cluster creation of kind cluster {{ namespace }} has been finished."

@@ -1,0 +1,83 @@
+# pvc for maven local repo .m2repo
+
+- name: Create a pvc for maven repo
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        namespace: '{{ namespace }}'
+        name: '{{ jenkins.maven_repo_pvc }}'
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 10Gi
+
+# install chart
+
+- name: Add Jenkins Helm repo
+  kubernetes.core.helm_repository:
+      name: jenkins
+      repo_url: https://charts.jenkins.io
+
+- name: Install Jenkins Helm Chart
+  kubernetes.core.helm:
+      name: '{{ jenkins.service_name }}'
+      namespace: '{{ namespace }}'
+      chart_ref: jenkins/jenkins
+      wait: true
+      values:
+        persistence.existingClaim: '{{ jenkins.maven_repo_pvc }}'
+
+- name: Search for Jenkins Pod
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: '{{ namespace }}'
+    label_selectors:
+      - app.kubernetes.io/name = jenkins
+      - app.kubernetes.io/instance = {{ jenkins.service_name }}
+  register: jenkins_pod
+
+- name: Get Jenkins admin password
+  kubernetes.core.k8s_exec:
+    namespace: '{{ namespace }}'
+    pod: '{{ jenkins_pod.resources[0].metadata.name }}'
+    command: /bin/cat /run/secrets/additional/chart-admin-password
+  register: jenkins_admin_password
+
+- name: Print Jenkins admin password
+  debug:
+    msg: "Login: admin, Pwd: {{ jenkins_admin_password.stdout }}"
+
+- name: Print Jenkins port
+  debug:
+    msg: "Jenkins port {{ jenkins.port }}"
+
+# .m2/settings.xml
+
+- name: Creating maven .m2/settings.xml
+  template:
+    src: settings.xml.j2
+    dest: settings.xml
+
+- name: Checks m2-settings secret exists
+  kubernetes.core.k8s_info:
+    api_version: v1
+    kind: Secret
+    name: '{{ jenkins.m2_settings_secretname }}'
+    namespace: '{{ namespace }}'
+  register: mvn_settings_exists
+
+- name: Create m2-settings secret
+  shell: 'kubectl create secret generic {{ jenkins.m2_settings_secretname }} --from-file=settings.xml=./settings.xml --namespace {{ namespace }}'
+  when: mvn_settings_exists.resources | length == 0
+
+# network
+
+- name: Expose Jenkins port
+  shell: >
+    nohup kubectl port-forward svc/{{ jenkins.service_name }} {{ jenkins.port }}:{{ jenkins.port }}  --address='0.0.0.0' --namespace {{ namespace }} >/dev/null 2>&1 &
+  register: expose_jenkins

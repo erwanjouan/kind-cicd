@@ -1,0 +1,15 @@
+- name: dependency
+  include_tasks: dependency.yml
+  when: mode == "deploy"
+
+- name: cluster
+  include_tasks: cluster.yml
+  when: mode == "deploy"
+
+- name: k8s_config
+  include_tasks: k8s_config.yml
+  when: mode == "deploy"
+
+- name: undo
+  include_tasks: undo.yml
+  when: mode == "destroy"

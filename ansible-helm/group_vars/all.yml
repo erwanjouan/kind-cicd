@@ -1,0 +1,18 @@
+namespace: ci
+registry:
+  port: 5000
+  name: local
+  service_name: docker-registry-integ
+jenkins:
+  port: 8080
+  service_name: my-jenkins
+  m2_settings_secretname: m2-settings
+  kube_config_secretname: kube-config
+  maven_repo_pvc: maven-repo
+nexus: 
+  port: 8081
+  service_name: my-nexus-repository-manager
+postgresql:
+  port: 5432
+  service_name: my-postgresql
+flag_undo: false
