@@ -1,15 +1,24 @@
 # Ci on Kind (Kubernetes in Docker)
 
-- Requires packages
+- Requires
   - helm
   - ansible
   - python3-pip
   - kind
   - Docker
 
-Usage:
+## Usage:
+
+### Deploy 
+
 ```
-make deploy
+make install
+```
+
+### undeploy
+
+```
+make uninstall
 ```
 
 ## Maven settings
