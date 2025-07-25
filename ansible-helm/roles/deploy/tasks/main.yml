@@ -1,0 +1,17 @@
+- name: dependency
+  include_tasks: dependency.yml
+
+- name: cluster
+  include_tasks: cluster.yml
+
+- name: k8s_config
+  include_tasks: k8s_config.yml
+
+- name: nexus
+  include_tasks: nexus.yml
+
+- name: jenkins
+  include_tasks: main.yml
+
+- name: postgresql
+  include_tasks: postgresql.yml

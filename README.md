@@ -1,4 +1,8 @@
-# Ci on Kind (Kubernetes in Docker)
+# Ci on Kind 
+
+Jenkins / Nexus / Maven Cicd based on [kind](https://kind.sigs.k8s.io/) (Kubernetes in Docker).
+
+Deployment files use ansible and helm.
 
 - Requires packages
   - helm

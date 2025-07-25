@@ -1,0 +1,45 @@
+# Namespace
+
+- name: Create a k8s namespace
+  kubernetes.core.k8s:
+    name: '{{ namespace }}'
+    api_version: v1
+    kind: Namespace
+    state: present
+
+# Rbac
+
+- name: Create ClusterRole
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRole
+      metadata:
+        name: job-executor
+        namespace: '{{ namespace }}'
+      rules:
+        - apiGroups: [ "" ]
+          resources: ["*"]
+          verbs: ["*"]
+        - apiGroups: [ "batch" ]
+          resources: ["*"]
+          verbs: ["*"]
+
+- name: Create ClusterRoleBinding
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: rbac.authorization.k8s.io/v1
+      kind: ClusterRoleBinding
+      metadata:
+        name: job-executor
+        namespace: '{{ namespace }}'
+      subjects:
+        - kind: ServiceAccount
+          name: default
+          namespace: '{{ namespace }}'
+      roleRef:
+        kind: ClusterRole
+        name: job-executor
+        apiGroup: rbac.authorization.k8s.io
