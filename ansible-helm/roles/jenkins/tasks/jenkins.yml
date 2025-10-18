@@ -27,10 +27,12 @@
   kubernetes.core.helm:
       name: '{{ jenkins.service_name }}'
       namespace: '{{ namespace }}'
+      chart_version: 5.5.16
       chart_ref: jenkins/jenkins
       wait: true
       values:
         persistence.existingClaim: '{{ jenkins.maven_repo_pvc }}'
+        controller.installLatestSpecifiedPlugins: false
 
 - name: Search for Jenkins Pod
   kubernetes.core.k8s_info:

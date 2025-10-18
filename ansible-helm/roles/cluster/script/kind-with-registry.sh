@@ -4,9 +4,17 @@ set -o errexit
 # 1. Create registry container unless it already exists
 reg_name='kind-registry'
 reg_port='5001'
+reg_username='myuser'
+reg_password='mypassword'
 if [ "$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true)" != 'true' ]; then
+  # Password for custom registry
+  mkdir auth || true
+  docker run --entrypoint htpasswd httpd:2 -Bbn ${reg_username} ${reg_password} > auth/htpasswd
+  cat auth/htpasswd
+  # Custom registry
   docker run \
     -d --restart=always -p "127.0.0.1:${reg_port}:5000" --network bridge --name "${reg_name}" \
+    -v `pwd`/auth:/auth  -e "REGISTRY_AUTH=htpasswd"  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm"  -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
     registry:2
 fi
 

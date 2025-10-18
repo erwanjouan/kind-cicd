@@ -1,0 +1,3 @@
+- name: kaniko
+  include_tasks: kaniko.yml
+  when: mode == "deploy"

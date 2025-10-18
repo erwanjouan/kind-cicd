@@ -13,7 +13,7 @@ Deployment files use ansible and helm.
 
 Usage:
 ```
-make deploy
+make install ( / uninstall)
 ```
 
 ## Maven settings
@@ -39,3 +39,7 @@ kubectl run -it myimage --image docker-registry-integ:5000/my-custom-image:lates
 
 https://medium.com/@nash.checkin/kind-kubernetes-in-docker-pulling-image-from-private-insecure-registry-2711706629cb
 # kind-cicd
+
+## registry with auth
+https://stackoverflow.com/questions/38247362/how-i-can-use-docker-registry-with-login-password
+https://senertugrul.medium.com/how-to-use-kaniko-to-build-docker-images-on-jenkins-216a68caf7b8

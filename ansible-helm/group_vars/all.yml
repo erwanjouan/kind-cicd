@@ -1,7 +1,9 @@
 namespace: ci
 registry:
-  port: 5000
+  port: 5001
   name: local
+  user: myuser
+  password: mypassword
   service_name: docker-registry-integ
 jenkins:
   port: 8080
@@ -15,4 +17,6 @@ nexus:
 postgresql:
   port: 5432
   service_name: my-postgresql
+kaniko:
+  secret_name: kaniko-secret
 flag_undo: false

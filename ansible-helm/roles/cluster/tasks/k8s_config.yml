@@ -43,8 +43,3 @@
         kind: ClusterRole
         name: job-executor
         apiGroup: rbac.authorization.k8s.io
-
-- name: Registry script
-  template:
-    - src: kind-with-registry.sh.j2
-      dest: kind-with-registry.sh

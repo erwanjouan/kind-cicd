@@ -1,9 +1,15 @@
-# Kind cluster creation
+# Kind registry and cluster creation
 
-- name: Create kind cluster
-  shell: "kind create cluster --name {{ namespace }}"
-  ignore_errors: yes
+- name: Get infos on container
+  docker_container_info:
+    name: kind-registry
+  register: registry
 
-- name: Cluster creation has been finished
-  debug:
-    msg: "Cluster creation of kind cluster {{ namespace }} has been finished."
+- name: Registry script
+  script:
+    cmd: script/kind-with-registry.sh
+  register: out
+  when: not registry.exists
+
+- debug:
+    var: out.stdout

@@ -4,7 +4,17 @@
     api_version: v1
     kind: Namespace
     state: absent
+  ignore_errors: yes
 
 - name: Delete kind cluster
-  shell: "kind delete cluster --name {{ namespace }}"
+  shell: "kind delete cluster --name kind"
   ignore_errors: yes
+
+- name: Delete local registry
+  docker_container:
+    name: kind-registry
+    state: stopped
+
+- name: Remove Stoped docker containers
+  shell: |
+     docker rm $(docker ps -a -q);
