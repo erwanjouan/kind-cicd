@@ -1,4 +1,4 @@
-namespace: ci
+k8s_build_namespace: ci
 registry:
   port: 5001
   name: local

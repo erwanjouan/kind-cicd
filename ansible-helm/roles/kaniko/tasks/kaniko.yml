@@ -3,10 +3,10 @@
     api_version: v1
     kind: Secret
     name: '{{ kaniko.secret_name }}'
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
   register: kaniko_secret_name_exists
 
 - name: Create kaniko secret
-  shell: 'kubectl create secret generic {{ kaniko.secret_name }} --from-file=settings.xml=./config.json --namespace {{ namespace }}'
+  shell: 'kubectl create secret generic {{ kaniko.secret_name }} --from-file=settings.xml=./config.json --namespace {{ k8s_build_namespace }}'
   when: mvn_settings_exists.resources | length == 0
 

@@ -2,10 +2,3 @@
   community.general.ansible_galaxy_install:
     type: collection
     name: kubernetes.core
-
-- name: install python pre-requisites
-  pip:
-    name:
-      - openshift
-      - pyyaml
-      - kubernetes

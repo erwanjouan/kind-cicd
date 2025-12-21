@@ -2,7 +2,7 @@
 
 - name: Create a k8s namespace
   kubernetes.core.k8s:
-    name: '{{ namespace }}'
+    name: '{{ k8s_build_namespace }}'
     api_version: v1
     kind: Namespace
     state: present
@@ -17,7 +17,7 @@
       kind: ClusterRole
       metadata:
         name: job-executor
-        namespace: '{{ namespace }}'
+        namespace: '{{ k8s_build_namespace }}'
       rules:
         - apiGroups: [ "" ]
           resources: ["*"]
@@ -34,11 +34,11 @@
       kind: ClusterRoleBinding
       metadata:
         name: job-executor
-        namespace: '{{ namespace }}'
+        namespace: '{{ k8s_build_namespace }}'
       subjects:
         - kind: ServiceAccount
           name: default
-          namespace: '{{ namespace }}'
+          namespace: '{{ k8s_build_namespace }}'
       roleRef:
         kind: ClusterRole
         name: job-executor

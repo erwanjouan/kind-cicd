@@ -7,7 +7,7 @@
   kubernetes.core.helm:
       # https://github.com/bitnami/charts/tree/main/bitnami/postgresql
       name: '{{ postgresql.service_name }}'
-      namespace: '{{ namespace }}'
+      namespace: '{{ k8s_build_namespace }}'
       chart_ref: bitnami/postgresql
       wait: true
       values:
@@ -18,4 +18,4 @@
 
 - name: Expose Postgresql port
   shell: >
-    nohup kubectl port-forward svc/{{ postgresql.service_name }} {{ postgresql.port }}:{{ postgresql.port }}  --address='0.0.0.0' --namespace {{ namespace }} >/dev/null 2>&1 &
+    nohup kubectl port-forward svc/{{ postgresql.service_name }} {{ postgresql.port }}:{{ postgresql.port }}  --address='0.0.0.0' --namespace {{ k8s_build_namespace }} >/dev/null 2>&1 &

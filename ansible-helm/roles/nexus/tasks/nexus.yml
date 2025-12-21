@@ -6,7 +6,7 @@
 - name: Install Nexus Helm Chart
   kubernetes.core.helm:
     name: '{{ nexus.service_name }}'
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
     chart_ref: sonatype/nexus-repository-manager
     create_namespace: true
     wait: true
@@ -14,7 +14,7 @@
 - name: Search for Nexus Pod
   kubernetes.core.k8s_info:
     kind: Pod
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
     label_selectors:
       - app.kubernetes.io/name = nexus-repository-manager
       - app.kubernetes.io/instance = {{ nexus.service_name }}
@@ -22,7 +22,7 @@
 
 - name: Get Nexus admin password
   kubernetes.core.k8s_exec:
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
     pod: '{{ nexus_pod.resources[0].metadata.name }}'
     command: cat /nexus-data/admin.password
   register: nexus_admin_password
@@ -33,4 +33,4 @@
 
 - name: Expose Nexus api port
   shell: >
-    nohup kubectl --namespace {{ namespace }} port-forward svc/{{ nexus.service_name }} {{ nexus.port }}:{{ nexus.port }} --address='0.0.0.0' >/dev/null 2>&1 &
+    nohup kubectl --namespace {{ k8s_build_namespace }} port-forward svc/{{ nexus.service_name }} {{ nexus.port }}:{{ nexus.port }} --address='0.0.0.0' >/dev/null 2>&1 &

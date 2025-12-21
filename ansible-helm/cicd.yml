@@ -3,5 +3,5 @@
 
   roles:
     - role: cluster
-    #- role: nexus
+    - role: nexus
     #- role: jenkins

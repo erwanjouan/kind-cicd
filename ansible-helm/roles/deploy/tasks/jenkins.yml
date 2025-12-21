@@ -7,7 +7,7 @@
       apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        namespace: '{{ namespace }}'
+        namespace: '{{ k8s_build_namespace }}'
         name: '{{ jenkins.maven_repo_pvc }}'
       spec:
         accessModes:
@@ -26,7 +26,7 @@
 - name: Install Jenkins Helm Chart
   kubernetes.core.helm:
       name: '{{ jenkins.service_name }}'
-      namespace: '{{ namespace }}'
+      namespace: '{{ k8s_build_namespace }}'
       chart_ref: jenkins/jenkins
       wait: true
       values:
@@ -35,7 +35,7 @@
 - name: Search for Jenkins Pod
   kubernetes.core.k8s_info:
     kind: Pod
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
     label_selectors:
       - app.kubernetes.io/name = jenkins
       - app.kubernetes.io/instance = {{ jenkins.service_name }}
@@ -43,7 +43,7 @@
 
 - name: Get Jenkins admin password
   kubernetes.core.k8s_exec:
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
     pod: '{{ jenkins_pod.resources[0].metadata.name }}'
     command: /bin/cat /run/secrets/additional/chart-admin-password
   register: jenkins_admin_password
@@ -68,16 +68,16 @@
     api_version: v1
     kind: Secret
     name: '{{ jenkins.m2_settings_secretname }}'
-    namespace: '{{ namespace }}'
+    namespace: '{{ k8s_build_namespace }}'
   register: mvn_settings_exists
 
 - name: Create m2-settings secret
-  shell: 'kubectl create secret generic {{ jenkins.m2_settings_secretname }} --from-file=settings.xml=./settings.xml --namespace {{ namespace }}'
+  shell: 'kubectl create secret generic {{ jenkins.m2_settings_secretname }} --from-file=settings.xml=./settings.xml --namespace {{ k8s_build_namespace }}'
   when: mvn_settings_exists.resources | length == 0
 
 # network
 
 - name: Expose Jenkins port
   shell: >
-    nohup kubectl port-forward svc/{{ jenkins.service_name }} {{ jenkins.port }}:{{ jenkins.port }}  --address='0.0.0.0' --namespace {{ namespace }} >/dev/null 2>&1 &
+    nohup kubectl port-forward svc/{{ jenkins.service_name }} {{ jenkins.port }}:{{ jenkins.port }}  --address='0.0.0.0' --namespace {{ k8s_build_namespace }} >/dev/null 2>&1 &
   register: expose_jenkins

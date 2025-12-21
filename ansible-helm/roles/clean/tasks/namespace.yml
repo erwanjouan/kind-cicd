@@ -1,6 +1,6 @@
 - name: Delete k8s namespace
   kubernetes.core.k8s:
-    name: '{{ namespace }}'
+    name: '{{ k8s_build_namespace }}'
     api_version: v1
     kind: Namespace
     state: absent
